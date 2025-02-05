@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload</title>
+</head>
+<body>
+    <h2>Upload an Image</h2>
+    <input type="file" id="imageInput">
+    <button onclick="uploadImage()">Upload</button>
+    <p id="message"></p>
+    <img id="uploadedImage" style="max-width: 300px; display: none;">
+
+    <script>
+        function uploadImage() {
+            let fileInput = document.getElementById("imageInput");
+            let file = fileInput.files[0];
+            if (!file) {
+                alert("Please select a file");
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append("image", file);
+
+            fetch("http://127.0.0.1:8000/api/upload-image/", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.image) {
+                    document.getElementById("message").innerText = "Upload successful!";
+                    document.getElementById("uploadedImage").src = data.image;
+                    document.getElementById("uploadedImage").style.display = "block";
+                } else {
+                    document.getElementById("message").innerText = "Upload failed.";
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("message").innerText = "An error occurred.";
+            });
+        }
+    </script>
+</body>
+</html>
